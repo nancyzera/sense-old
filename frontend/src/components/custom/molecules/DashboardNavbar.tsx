@@ -5,9 +5,9 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const DashboardNavbar = () => {
-     const { user, isAuthenticated, loading } = useSelector((state: RootState) => state.auth);
+     const { user, isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
 
-  if (loading) {
+  if (isLoading) {
     return (
         <div className="w-full h-[100vh] bg-[#222836] flex justify-center items-center z-[99998] fixed top-0 right-0 left-0 bottom-0">
             <div className="flex flex-col items-center space-y-4">

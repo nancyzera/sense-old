@@ -1,79 +1,54 @@
-// hooks/useAuth.ts
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useDispatch } from "react-redux";
-import { getProfile, login as loginService, logout as logoutService } from "@/services/account";
-import { setCredentials, clearCredentials } from "@/store/slices/auth";
-import { persistStore, fetchStore, removeStore } from "@/functions";
-import { loginFields } from "@/types/schema/account";
-import { User, ApiError } from "@/types";
-import { useEffect } from "react";
-
-export const useLogin = () => {
-  const dispatch = useDispatch();
-  const queryClient = useQueryClient();
-
-  return useMutation<unknown, ApiError, loginFields>({
-    mutationFn: (payload: loginFields) => loginService(payload),
-    onSuccess: (data: any) => {
-      console.log("Login response:", data); // Debug the response
-      if (data.success) {
-        const { user, tokens } = data.data;
-        persistStore("accessToken", tokens.accessToken);
-        persistStore("refreshToken", tokens.refreshToken);
-        dispatch(setCredentials({ user, accessToken: tokens.accessToken }));
-        queryClient.invalidateQueries({ queryKey: ["profile"] });
-      } else {
-        console.error("Login failed:", data.message);
-      }
-    },
-    onError: (error: ApiError) => {
-      console.error("Login error:", error);
-    },
-  });
-};
-
-export const useLogout = () => {
-  const dispatch = useDispatch();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: logoutService,
-    onSuccess: () => {
-      dispatch(clearCredentials());
-      removeStore("accessToken");
-      removeStore("refreshToken");
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-    },
-  });
-};
+import { useQuery } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProfile } from '@/services/account';
+import { setUser, clearUser } from '@/store/slices/auth';
+import { fetchStore, removeStore } from '@/functions';
+import { RootState } from '@/store';
+import { useEffect } from 'react';
 
 export const useProfile = () => {
   const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const accessToken = fetchStore('accessToken');
 
-  const query = useQuery<User, ApiError>({
-    queryKey: ["profile"],
+  const {
+    data: profileData,
+    isLoading,
+    error,
+    isError,
+  } = useQuery({
+    queryKey: ['profile'],
     queryFn: getProfile,
-    enabled: !!fetchStore("accessToken"),
-    refetchInterval: 1000 * 60 * 2,
-    refetchOnWindowFocus: true,
+    enabled: !!accessToken && !isAuthenticated, 
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10, 
   });
 
   useEffect(() => {
-    console.log("useProfile query state:", { isSuccess: query.isSuccess, data: query.data, error: query.error }); // Debug
-    if (query.isSuccess && query.data) {
-      const accessToken = fetchStore("accessToken");
-      if (accessToken) {
-        dispatch(setCredentials({ user: query.data, accessToken }));
-      }
+    if (profileData && !isAuthenticated) {
+      dispatch(setUser(profileData));
     }
+  }, [profileData, isAuthenticated, dispatch]);
 
-    if (query.error) {
-      console.error("Profile fetch error:", query.error);
-      dispatch(clearCredentials());
-      removeStore("accessToken");
-      removeStore("refreshToken");
+  useEffect(() => {
+    if (isError && error?.response?.status === 401) {
+      dispatch(clearUser());
+      removeStore('accessToken');
+      removeStore('refreshToken');
     }
-  }, [query.isSuccess, query.data, query.error, dispatch]);
+  }, [isError, error, dispatch]);
 
-  return query;
+  return {
+    user: user || profileData,
+    isLoading,
+    isAuthenticated: isAuthenticated || !!profileData,
+    error,
+    isError,
+  };
 };

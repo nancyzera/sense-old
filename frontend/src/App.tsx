@@ -20,14 +20,6 @@ import { RootState } from './store'
 
 
 const App = () => {
-  // const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  // const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     navigate("/app", { replace: true });
-  //   }
-  // }, [isAuthenticated, navigate]);
   useProfile();
   
   return (
