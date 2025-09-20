@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["node", "react-syntax-highlighter"],
     "jsx": "react-jsx",
     "moduleResolution": "bundler", 
     "module": "esnext",

@@ -1,5 +1,5 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import NotFound from './pages/NotFound'
 import LandingPage from './pages/LandingPage'
 import Dashbaord from './pages/dashboard/Dashboard'
@@ -11,9 +11,25 @@ import Payments from './pages/dashboard/Payments'
 import Developer from './pages/dashboard/Developer'
 import Settings from './pages/dashboard/Settings'
 import Tools from './pages/dashboard/Tools'
+import SignIn from './pages/auth/SignIn'
+import ProtectedRoute from './components/custom/organisms/auth-protect/ProtectedRoute'
+import AuthRoute from './components/custom/organisms/auth-protect/AuthRoute'
+import { useProfile } from './hooks/useAuth'
+import { useSelector } from 'react-redux'
+import { RootState } from './store'
 
 
 const App = () => {
+  // const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  // const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     navigate("/app", { replace: true });
+  //   }
+  // }, [isAuthenticated, navigate]);
+  useProfile();
+  
   return (
     <>
       <Routes>
@@ -26,7 +42,8 @@ const App = () => {
         <Route path='/app/payments' element={<Payments />} />
         <Route path='/app/developers' element={<Developer />} />
         <Route path='/app/settings' element={<Settings />} />
-        <Route path='/app' element={<Dashbaord />} />
+        <Route path='/app' element={<ProtectedRoute><Dashbaord /></ProtectedRoute>} />
+        <Route path='/signin' element={<AuthRoute><SignIn /></AuthRoute>} />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </>

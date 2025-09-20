@@ -11,6 +11,15 @@ body {
   background-color: #1a1f2e;
 }
 
+.custom-code-block pre {
+  background-color: #222836 !important;
+  background: #222836 !important;
+}
+
+.custom-code-block code {
+  background: transparent !important;
+}
+
 @font-face {
   font-family: 'Matter';
   src: url('/fonts/matter/Matter-Bold.ttf') format('truetype');
