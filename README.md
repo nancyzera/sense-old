@@ -1,4 +1,4 @@
-# Sense AI Backend
+# Sense AI 
 
 A comprehensive backend API for Sense AI - an accessible AI assistant with real-time voice-to-text, text-to-speech, subscriptions, and wearable integrations.
 
@@ -274,4 +274,3 @@ For support and questions:
 
 ---
 
-**Built with ❤️ by the Sense AI Team**
