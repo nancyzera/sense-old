@@ -1,8 +1,8 @@
-# Sense AI 
+# Sense AI.
 
 A comprehensive backend API for Sense AI - an accessible AI assistant with real-time voice-to-text, text-to-speech, subscriptions, and wearable integrations.
 
-## 🚀 Features
+## 🚀 Features.
 
 - **Authentication System**: JWT-based auth with access & refresh tokens
 - **OAuth Integration**: Google and GitHub login support
@@ -12,7 +12,7 @@ A comprehensive backend API for Sense AI - an accessible AI assistant with real-
 - **Scalable Architecture**: Clean MVC pattern with middleware
 - **MongoDB Integration**: Mongoose ODM with advanced schemas
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack.
 
 - **Runtime**: Node.js (ES6 modules)
 - **Framework**: Express.js
